@@ -52,7 +52,6 @@ def main(args):
         tracker_epoch = defaultdict(lambda: defaultdict(dict))
 
         for iteration, (x, y) in enumerate(data_loader):
-
             x, y = x.to(device), y.to(device)
 
             if args.conditional:
@@ -92,7 +91,7 @@ def main(args):
                         plt.text(
                             0, 0, "c={:d}".format(c[p].item()), color='black',
                             backgroundcolor='white', fontsize=8)
-                    plt.imshow(x[p].view(28, 28).data.numpy())
+                    plt.imshow(x[p].view(28, 28).cpu().data.numpy())
                     plt.axis('off')
 
                 if not os.path.exists(os.path.join(args.fig_root, str(ts))):
@@ -131,5 +130,6 @@ if __name__ == '__main__':
     parser.add_argument("--conditional", action='store_true')
 
     args = parser.parse_args()
+    args.conditional = True
 
     main(args)

@@ -36,6 +36,8 @@ class VAE(nn.Module):
 
         std = torch.exp(0.5 * log_var)
         eps = torch.randn([batch_size, self.latent_size])
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        std, eps = std.to(device), eps.to(device)
         z = eps * std + means
 
         recon_x = self.decoder(z, c)
@@ -109,11 +111,14 @@ class Decoder(nn.Module):
                 self.MLP.add_module(name="sigmoid", module=nn.Sigmoid())
 
     def forward(self, z, c):
-
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         if self.conditional:
             c = idx2onehot(c, n=10)
+            c = c.to(device)
+            z = z.to(device)
             z = torch.cat((z, c), dim=-1)
 
+        z = z.to(device)
         x = self.MLP(z)
 
         return x
